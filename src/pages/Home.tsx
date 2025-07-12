@@ -1,5 +1,11 @@
+import Banner from "./sections/Banner";
+
 const Home = () => {
-  return <div>I am HomePage</div>;
+  return (
+    <div>
+      <Banner />
+    </div>
+  );
 };
 
 export default Home;
