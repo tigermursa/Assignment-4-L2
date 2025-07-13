@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectContent,
@@ -29,8 +30,10 @@ import {
   useAddBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
+  useBorrowBookMutation,
 } from "@/redux/features/books/booksApi";
 import type { Genre, IBook } from "@/types/booksTypes";
+import { Link } from "react-router";
 
 const GENRES: Genre[] = [
   "FICTION",
@@ -51,21 +54,34 @@ const defaultValues: Omit<IBook, "_id"> = {
   available: true,
 };
 
+interface IBorrowForm {
+  quantity: number;
+  dueDate: string;
+}
+
 const AllBooks: React.FC = () => {
   const { data, isLoading, refetch } = useGetAllBookQuery(null);
   const [addBook] = useAddBookMutation();
   const [updateBook] = useUpdateBookMutation();
   const [deleteBook] = useDeleteBookMutation();
+  const [borrowBook] = useBorrowBookMutation();
 
   const [open, setOpen] = useState(false);
   const [editData, setEditData] = useState<IBook | null>(null);
 
+  const [borrowOpen, setBorrowOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<IBook | null>(null);
+
   const { register, handleSubmit, reset, setValue, watch } = useForm<
     Partial<IBook>
-  >({
-    defaultValues,
-  });
+  >({ defaultValues });
   const selectedGenre = watch("genre");
+
+  const {
+    register: registerBorrow,
+    handleSubmit: handleBorrowSubmit,
+    reset: resetBorrow,
+  } = useForm<IBorrowForm>({ defaultValues: { quantity: 1, dueDate: "" } });
 
   useEffect(() => {
     if (!open) {
@@ -73,6 +89,13 @@ const AllBooks: React.FC = () => {
       setEditData(null);
     }
   }, [open, reset]);
+
+  useEffect(() => {
+    if (!borrowOpen) {
+      resetBorrow({ quantity: 1, dueDate: "" });
+      setSelectedBook(null);
+    }
+  }, [borrowOpen, resetBorrow]);
 
   const onSubmit = async (formData: Partial<IBook>) => {
     try {
@@ -89,6 +112,23 @@ const AllBooks: React.FC = () => {
     }
   };
 
+  const onBorrow = async (data: IBorrowForm) => {
+    if (!selectedBook) return;
+    try {
+      await borrowBook({
+        book: selectedBook._id,
+        quantity: data.quantity,
+        dueDate: data.dueDate,
+      }).unwrap();
+      // optionally refetch or update state
+      refetch();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setBorrowOpen(false);
+    }
+  };
+
   const handleEdit = (book: IBook) => {
     setEditData(book);
     reset(book);
@@ -102,6 +142,11 @@ const AllBooks: React.FC = () => {
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleBorrow = (book: IBook) => {
+    setSelectedBook(book);
+    setBorrowOpen(true);
   };
 
   return (
@@ -130,7 +175,7 @@ const AllBooks: React.FC = () => {
 
               <Select
                 value={selectedGenre}
-                onValueChange={(value) => setValue("genre", value as Genre)}
+                onValueChange={(val) => setValue("genre", val as Genre)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Genre" />
@@ -158,6 +203,36 @@ const AllBooks: React.FC = () => {
               />
               <Input {...register("description")} placeholder="Description" />
               <Button type="submit">{editData ? "Update" : "Add"}</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Borrow Dialog */}
+        <Dialog open={borrowOpen} onOpenChange={setBorrowOpen}>
+          <DialogTrigger asChild>
+            {/* invisible trigger; open via handleBorrow */}
+            <span />
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Borrow "{selectedBook?.title}"</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleBorrowSubmit(onBorrow)} className="space-y-4">
+              <Input
+                {...registerBorrow("quantity", {
+                  required: true,
+                  valueAsNumber: true,
+                })}
+                type="number"
+                placeholder="Quantity"
+                min={1}
+              />
+              <Input
+                {...registerBorrow("dueDate", { required: true })}
+                type="datetime-local"
+                placeholder="Due Date"
+              />
+              <Button type="submit">Confirm Borrow</Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -207,12 +282,18 @@ const AllBooks: React.FC = () => {
                     >
                       Delete
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleBorrow(book)}
+                    >
                       Borrow
                     </Button>
-                    <Button variant="outline" size="sm">
-                      Details
-                    </Button>
+                    <Link to={`/books/${book._id}`}>
+                      <Button variant="outline" size="sm">
+                        Details
+                      </Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               ))}

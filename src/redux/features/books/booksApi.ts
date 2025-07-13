@@ -49,6 +49,25 @@ const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["data"],
     }),
+
+    //! post borrow book
+    borrowBook: builder.mutation({
+      query: (data) => ({
+        url: `/borrow`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["data"],
+    }),
+
+    //! get borrow book summary
+    getSummary: builder.query<{ data: IBook[] }, null>({
+      query: () => ({
+        url: `/borrow`,
+        method: "GET",
+      }),
+      providesTags: ["data"],
+    }),
   }),
 });
 
@@ -58,4 +77,6 @@ export const {
   useAddBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
+  useBorrowBookMutation,
+  useGetSummaryQuery,
 } = authApi;
