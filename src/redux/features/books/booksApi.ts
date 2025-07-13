@@ -1,11 +1,12 @@
 import { baseApi } from "@/redux/api/baseApi";
+import type { IBook } from "@/types/booksTypes"; //book types
 
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     //! create function
     addBook: builder.mutation({
       query: (data) => ({
-        url: `/api/v1/books`, //have to change
+        url: `/books`, //have to change
         method: "POST",
         body: data,
       }),
@@ -13,9 +14,9 @@ const authApi = baseApi.injectEndpoints({
     }),
 
     //! get function
-    getAllBook: builder.query({
+    getAllBook: builder.query<{ data: IBook[] }, null>({
       query: () => ({
-        url: `/api/v1/books`,
+        url: `/books`,
         method: "GET",
       }),
       providesTags: ["data"],
@@ -24,7 +25,7 @@ const authApi = baseApi.injectEndpoints({
     //!get single with id function
     getBookById: builder.query({
       query: (id: string) => ({
-        url: `/api/v1/books/${id}`,
+        url: `/books/${id}`,
         method: "GET",
       }),
       providesTags: ["data"],
@@ -32,8 +33,8 @@ const authApi = baseApi.injectEndpoints({
 
     //!Update function
     updateBook: builder.mutation({
-      query: (data) => ({
-        url: `/api/v1/books/${data}`,
+      query: ({ id, ...data }) => ({
+        url: `/books/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -43,7 +44,7 @@ const authApi = baseApi.injectEndpoints({
     //! Delete function
     deleteBook: builder.mutation({
       query: (id: string) => ({
-        url: `/api/v1/books/${id}`,
+        url: `/books/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["data"],
