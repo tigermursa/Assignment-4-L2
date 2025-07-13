@@ -1,5 +1,5 @@
 import { baseApi } from "@/redux/api/baseApi";
-import type { IBook } from "@/types/booksTypes"; //book types
+import type { IBook, IBorrow } from "@/types/booksTypes"; //book types
 
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -61,7 +61,7 @@ const authApi = baseApi.injectEndpoints({
     }),
 
     //! get borrow book summary
-    getSummary: builder.query<{ data: IBook[] }, null>({
+    getSummary: builder.query<{ data: IBorrow[] }, null>({
       query: () => ({
         url: `/borrow`,
         method: "GET",

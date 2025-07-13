@@ -1,4 +1,3 @@
-// src/pages/BookDetails.tsx
 import React from "react";
 import { useGetBookByIdQuery } from "@/redux/features/books/booksApi";
 import { useParams } from "react-router";
@@ -10,6 +9,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Loader from "./loader/Loader";
 
 const BookDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +19,7 @@ const BookDetails: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        Loading...
+        <Loader />
       </div>
     );
   }
@@ -64,7 +64,7 @@ const BookDetails: React.FC = () => {
             </div>
             <div className="flex items-center space-x-2">
               <span className="font-semibold">Availability:</span>
-              <Badge variant={book.available ? "success" : "destructive"}>
+              <Badge variant={book.available ? "destructive" : "secondary"}>
                 {book.available ? "Available" : "Unavailable"}
               </Badge>
             </div>

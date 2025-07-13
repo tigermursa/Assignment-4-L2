@@ -16,3 +16,14 @@ export interface IBook {
   copies: number;
   available?: boolean;
 }
+
+interface book {
+  title: string;
+  isbn: number;
+}
+
+export interface IBorrow {
+  book: book;
+  totalQuantity: number;
+  dueDate: Date;
+}

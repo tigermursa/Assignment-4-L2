@@ -34,6 +34,7 @@ import {
 } from "@/redux/features/books/booksApi";
 import type { Genre, IBook } from "@/types/booksTypes";
 import { Link } from "react-router";
+import Loader from "./loader/Loader";
 
 const GENRES: Genre[] = [
   "FICTION",
@@ -120,7 +121,7 @@ const AllBooks: React.FC = () => {
         quantity: data.quantity,
         dueDate: data.dueDate,
       }).unwrap();
-      // optionally refetch or update state
+
       refetch();
     } catch (err) {
       console.error(err);
@@ -148,65 +149,81 @@ const AllBooks: React.FC = () => {
     setSelectedBook(book);
     setBorrowOpen(true);
   };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[200px]">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Book List</h2>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setOpen(true)}>Add Book</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editData ? "Update Book" : "Add New Book"}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <Input
-                {...register("title", { required: true })}
-                placeholder="Title"
-              />
-              <Input
-                {...register("author", { required: true })}
-                placeholder="Author"
-              />
+    <div className="p-4 pt-16 h-[100vh]">
+      <div className="flex justify-between items-center mb-4 ">
+        <div className=" flex w-full justify-between">
+          <h2 className="text-xl font-semibold">Book List</h2>
+          <div>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button onClick={() => setOpen(true)}>Add Book</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {editData ? "Update Book" : "Add New Book"}
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  <Input
+                    {...register("title", { required: true })}
+                    placeholder="Title"
+                  />
+                  <Input
+                    {...register("author", { required: true })}
+                    placeholder="Author"
+                  />
 
-              <Select
-                value={selectedGenre}
-                onValueChange={(val) => setValue("genre", val as Genre)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Genre" />
-                </SelectTrigger>
-                <SelectContent>
-                  {GENRES.map((g) => (
-                    <SelectItem key={g} value={g}>
-                      {g
-                        .split("_")
-                        .map((w) => w[0] + w.slice(1).toLowerCase())
-                        .join(" ")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <Select
+                    value={selectedGenre}
+                    onValueChange={(val) => setValue("genre", val as Genre)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Genre" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {GENRES.map((g) => (
+                        <SelectItem key={g} value={g}>
+                          {g
+                            .split("_")
+                            .map((w) => w[0] + w.slice(1).toLowerCase())
+                            .join(" ")}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
-              <Input
-                {...register("isbn", { required: true })}
-                placeholder="ISBN"
-              />
-              <Input
-                {...register("copies", { required: true, valueAsNumber: true })}
-                type="number"
-                placeholder="Copies"
-              />
-              <Input {...register("description")} placeholder="Description" />
-              <Button type="submit">{editData ? "Update" : "Add"}</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-
+                  <Input
+                    {...register("isbn", { required: true })}
+                    placeholder="ISBN"
+                  />
+                  <Input
+                    {...register("copies", {
+                      required: true,
+                      valueAsNumber: true,
+                    })}
+                    type="number"
+                    placeholder="Copies"
+                  />
+                  <Input
+                    {...register("description")}
+                    placeholder="Description"
+                  />
+                  <Button type="submit">{editData ? "Update" : "Add"}</Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
         {/* Borrow Dialog */}
         <Dialog open={borrowOpen} onOpenChange={setBorrowOpen}>
           <DialogTrigger asChild>

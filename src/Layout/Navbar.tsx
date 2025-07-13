@@ -1,12 +1,11 @@
 import React from "react";
-import { Home, BookOpen, PlusCircle, List } from "lucide-react";
+import { Home, BookOpen, List } from "lucide-react";
 import { Link } from "react-router";
 
 const Navbar: React.FC = () => {
   const navItems = [
     { name: "Home", path: "/", icon: <Home size={20} /> },
     { name: "Books", path: "/books", icon: <BookOpen size={20} /> },
-    { name: "Add Book", path: "/books/add", icon: <PlusCircle size={20} /> },
     {
       name: "Borrow Summary",
       path: "/borrow-summary",
