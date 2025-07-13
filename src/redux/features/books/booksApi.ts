@@ -1,6 +1,21 @@
 import { baseApi } from "@/redux/api/baseApi";
 import type { IBook, IBorrow } from "@/types/booksTypes"; //book types
 
+interface GetAllBooksResponse {
+  data: IBook[];
+  total: number;
+  page: number;
+  pages: number;
+}
+
+interface GetAllBooksParams {
+  filter?: string;
+  sortBy?: string;
+  sort?: "asc" | "desc";
+  page?: number;
+  limit?: number;
+}
+
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     //! create function
@@ -14,10 +29,11 @@ const authApi = baseApi.injectEndpoints({
     }),
 
     //! get function
-    getAllBook: builder.query<{ data: IBook[] }, null>({
-      query: () => ({
+    getAllBook: builder.query<GetAllBooksResponse, GetAllBooksParams>({
+      query: ({ filter, sortBy, sort, page, limit }) => ({
         url: `/books`,
         method: "GET",
+        params: { filter, sortBy, sort, page, limit },
       }),
       providesTags: ["data"],
     }),
