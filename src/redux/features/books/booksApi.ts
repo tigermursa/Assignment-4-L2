@@ -74,6 +74,7 @@ const authApi = baseApi.injectEndpoints({
 // api hooks
 export const {
   useGetAllBookQuery,
+  useGetBookByIdQuery,
   useAddBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,

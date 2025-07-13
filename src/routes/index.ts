@@ -1,4 +1,5 @@
 import App from "@/App";
+import BookDetails from "@/components/BookDetails";
 import Home from "@/pages/Home";
 
 import { createBrowserRouter } from "react-router";
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
       {
         index: true,
         Component: Home,
+      },
+      {
+        path: "books/:id",
+        Component: BookDetails,
       },
     ],
   },
