@@ -51,7 +51,7 @@ const BookDetails: React.FC = () => {
               <Badge variant="secondary">
                 {book.genre
                   .split("_")
-                  .map((w) => w[0] + w.slice(1).toLowerCase())
+                  .map((w: string) => w[0] + w.slice(1).toLowerCase())
                   .join(" ")}
               </Badge>
             </div>
