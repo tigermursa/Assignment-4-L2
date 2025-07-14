@@ -165,7 +165,7 @@ const AllBooks: React.FC = () => {
   const hasNext = data ? page < data.pages : false;
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="p-4 min-h-[500px] ">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">Book List</h2>
         <Button onClick={() => setOpen(true)}>Add Book</Button>
